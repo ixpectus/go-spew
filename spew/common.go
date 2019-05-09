@@ -35,11 +35,12 @@ var (
 	falseBytes            = []byte("false")
 	interfaceBytes        = []byte("(interface {})")
 	commaNewlineBytes     = []byte(",\n")
+	commaBytes            = []byte(",")
 	newlineBytes          = []byte("\n")
 	openBraceBytes        = []byte("{")
 	openBraceNewlineBytes = []byte("{\n")
 	closeBraceBytes       = []byte("}")
-	asteriskBytes         = []byte("*")
+	asteriskBytes         = []byte("&")
 	colonBytes            = []byte(":")
 	colonSpaceBytes       = []byte(": ")
 	openParenBytes        = []byte("(")
@@ -62,6 +63,7 @@ var (
 	closeMapBytes         = []byte("]")
 	lenEqualsBytes        = []byte("len=")
 	capEqualsBytes        = []byte("cap=")
+	quoteBytes            = []byte("\"")
 )
 
 // hexDigits is used to map a decimal value to a hex digit.

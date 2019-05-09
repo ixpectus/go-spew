@@ -153,19 +153,21 @@ func (f *formatState) formatPtr(v reflect.Value) {
 		}
 	}
 
+	f.fs.Write(asteriskBytes)
 	// Display type or indirection level depending on flags.
 	if showTypes && !f.ignoreNextType {
-		f.fs.Write(openParenBytes)
-		f.fs.Write(bytes.Repeat(asteriskBytes, indirects))
-		f.fs.Write([]byte(ve.Type().String()))
-		f.fs.Write(closeParenBytes)
+		// f.fs.Write(openParenBytes)
+		// f.fs.Write(bytes.Repeat(asteriskBytes, indirects))
+		// f.fs.Write([]byte(ve.Type().String()))
+		// f.fs.Write(closeParenBytes)
 	} else {
 		if nilFound || cycleFound {
 			indirects += strings.Count(ve.Type().String(), "*")
 		}
-		f.fs.Write(openAngleBytes)
-		f.fs.Write([]byte(strings.Repeat("*", indirects)))
-		f.fs.Write(closeAngleBytes)
+		// f.fs.Write(asteriskBytes)
+		// f.fs.Write(openAngleBytes)
+		// f.fs.Write([]byte(strings.Repeat("*", indirects)))
+		// f.fs.Write(closeAngleBytes)
 	}
 
 	// Display pointer information depending on flags.
@@ -214,9 +216,9 @@ func (f *formatState) format(v reflect.Value) {
 
 	// Print type information unless already handled elsewhere.
 	if !f.ignoreNextType && f.fs.Flag('#') {
-		f.fs.Write(openParenBytes)
-		f.fs.Write([]byte(v.Type().String()))
-		f.fs.Write(closeParenBytes)
+		// f.fs.Write(openParenBytes)
+		// f.fs.Write([]byte(v.Type().String()))
+		// f.fs.Write(closeParenBytes)
 	}
 	f.ignoreNextType = false
 
@@ -261,10 +263,11 @@ func (f *formatState) format(v reflect.Value) {
 			f.fs.Write(nilAngleBytes)
 			break
 		}
+		f.fs.Write([]byte(v.Type().String()))
 		fallthrough
 
 	case reflect.Array:
-		f.fs.Write(openBracketBytes)
+		f.fs.Write(openBraceBytes)
 		f.depth++
 		if (f.cs.MaxDepth != 0) && (f.depth > f.cs.MaxDepth) {
 			f.fs.Write(maxShortBytes)
@@ -272,17 +275,20 @@ func (f *formatState) format(v reflect.Value) {
 			numEntries := v.Len()
 			for i := 0; i < numEntries; i++ {
 				if i > 0 {
-					f.fs.Write(spaceBytes)
+					// f.fs.Write(spaceBytes)
+					f.fs.Write(commaBytes)
 				}
 				f.ignoreNextType = true
 				f.format(f.unpackValue(v.Index(i)))
 			}
 		}
 		f.depth--
-		f.fs.Write(closeBracketBytes)
+		f.fs.Write(closeBraceBytes)
 
 	case reflect.String:
+		f.fs.Write(quoteBytes)
 		f.fs.Write([]byte(v.String()))
+		f.fs.Write(quoteBytes)
 
 	case reflect.Interface:
 		// The only time we should get here is for nil interfaces due to
@@ -313,7 +319,7 @@ func (f *formatState) format(v reflect.Value) {
 			}
 			for i, key := range keys {
 				if i > 0 {
-					f.fs.Write(spaceBytes)
+					f.fs.Write(commaBytes)
 				}
 				f.ignoreNextType = true
 				f.format(f.unpackValue(key))
@@ -327,6 +333,8 @@ func (f *formatState) format(v reflect.Value) {
 
 	case reflect.Struct:
 		numFields := v.NumField()
+
+		f.fs.Write([]byte(v.Type().String()))
 		f.fs.Write(openBraceBytes)
 		f.depth++
 		if (f.cs.MaxDepth != 0) && (f.depth > f.cs.MaxDepth) {
@@ -335,7 +343,7 @@ func (f *formatState) format(v reflect.Value) {
 			vt := v.Type()
 			for i := 0; i < numFields; i++ {
 				if i > 0 {
-					f.fs.Write(spaceBytes)
+					f.fs.Write(commaBytes)
 				}
 				vtf := vt.Field(i)
 				if f.fs.Flag('+') || f.fs.Flag('#') {
