@@ -19,6 +19,7 @@ package spew
 import (
 	"fmt"
 	"io"
+	"os"
 )
 
 // Errorf is a wrapper for fmt.Errorf that treats each argument as if it were
@@ -135,6 +136,21 @@ func Sprintf(format string, a ...interface{}) string {
 //	fmt.Sprintln(spew.NewFormatter(a), spew.NewFormatter(b))
 func Sprintln(a ...interface{}) string {
 	return fmt.Sprintln(convertArgs(a)...)
+}
+
+//Snap temporary function for personal usage
+func Snap(filename string, i interface{}) {
+	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		panic("error opening file")
+	}
+	defer f.Close()
+
+	c := ConfigState{
+		DisablePointerAddresses: true,
+		DisableCapacities:       true,
+	}
+	f.WriteString(c.Sprintf("%#v \n", i))
 }
 
 // convertArgs accepts a slice of arguments and returns a slice of the same
