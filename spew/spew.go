@@ -169,6 +169,29 @@ func SnapFromTo(filename string, from interface{}, to interface{}) {
 	f.WriteString(c.Sprintf("to \n %#v \n\n", to))
 }
 
+//SnapFromToMass temporary function for personal usage
+func SnapFromToMass(filename string, from []interface{}, to []interface{}) {
+	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		panic("error opening file")
+	}
+	defer f.Close()
+
+	c := ConfigState{
+		DisablePointerAddresses: true,
+		DisableCapacities:       true,
+	}
+
+	f.WriteString("--------\n")
+	for _, fr := range from {
+		f.WriteString(c.Sprintf("from \n %#v \n", fr))
+	}
+	for _, fr := range to {
+		f.WriteString(c.Sprintf("to \n %#v \n", fr))
+	}
+	f.WriteString("--------\n\n\n")
+}
+
 // convertArgs accepts a slice of arguments and returns a slice of the same
 // length with each argument converted to a default spew Formatter interface.
 func convertArgs(args []interface{}) (formatters []interface{}) {
